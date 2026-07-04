@@ -1,0 +1,73 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct No {
+    int verticeAlvo;
+    struct No* proximo;
+};
+
+struct ListaAdjacencia {
+    struct No* cabeca;
+};
+
+struct Grafo {
+    int numVertices;
+    struct ListaAdjacencia* vetor;
+};
+
+struct No* criarNo(int v) {
+    struct No* novoNo = (struct No*)malloc(sizeof(struct No));
+    novoNo->verticeAlvo = v;
+    novoNo->proximo = NULL;
+    return novoNo;
+}
+
+struct Grafo* criarGrafo(int V) {
+    struct Grafo* grafo = (struct Grafo*)malloc(sizeof(struct Grafo));
+    grafo->numVertices = V;
+    grafo->vetor = (struct ListaAdjacencia*)malloc(V * sizeof(struct ListaAdjacencia));
+    
+    for (int i = 0; i < V; i++) {
+        grafo->vetor[i].cabeca = NULL;
+    }
+    
+    return grafo;
+}
+
+void adicionarAresta(struct Grafo* grafo, int origem, int destino) {
+    struct No* novoNo = criarNo(destino);
+    novoNo->proximo = grafo->vetor[origem].cabeca;
+    grafo->vetor[origem].cabeca = novoNo;
+
+    novoNo = criarNo(origem);
+    novoNo->proximo = grafo->vetor[destino].cabeca;
+    grafo->vetor[destino].cabeca = novoNo;
+}
+
+void imprimirGrafo(struct Grafo* grafo) {
+    for (int v = 0; v < grafo->numVertices; v++) {
+        struct No* atual = grafo->vetor[v].cabeca;
+        printf("Vertice [%d]:", v);
+        
+        while (atual != NULL) {
+            printf(" -> %d", atual->verticeAlvo);
+            atual = atual->proximo;
+        }
+        printf(" -> NULL\n");
+    }
+}
+
+int main() {
+    int totalVertices = 4;
+    struct Grafo* meuGrafo = criarGrafo(totalVertices);
+
+    adicionarAresta(meuGrafo, 0, 1);
+    adicionarAresta(meuGrafo, 0, 2);
+    adicionarAresta(meuGrafo, 1, 2);
+    adicionarAresta(meuGrafo, 2, 3);
+
+    printf("--- REPRESENTACAO DO GRAFO (Lista de Adjacencia) ---\n");
+    imprimirGrafo(meuGrafo);
+
+    return 0;
+}
